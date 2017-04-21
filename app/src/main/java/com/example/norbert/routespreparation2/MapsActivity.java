@@ -25,11 +25,14 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.TimeZone;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -107,8 +110,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void butStop() {
         if (oneStop == false) {
 
-
-
             //Toast.makeText(this, String.valueOf(dis), Toast.LENGTH_SHORT).show();
             oneStop = true;
             Location location = gpStracker.getlocation();
@@ -119,7 +120,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             String odleglosc = String.format("%.2f", dis);
             mDatabaseHelper.setKoniecP(getAdres(StopP)); //wyciągnięcie adresu zakonczenia podróży
             //wyciągnięcie odległości i czasu podróży
-            mDatabaseHelper.setCzasP(odleglosc + " KM " + "AVS: " + WyliczCzas() + " KM/H");
+            mDatabaseHelper.setCzasP(odleglosc + " KM " + "AVS: " + WyliczAvs() + " KM/H" + " Time: " + WyliczCzas());
 
             boolean insertData = mDatabaseHelper.addData();
         } else {
@@ -138,24 +139,32 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    private int WyliczCzas() {
+    private int WyliczAvs() {
         long czasF = (new Date().getTime() - czasS.getTime());
 
         Calendar calendar = Calendar.getInstance();
         calendar.setTimeInMillis(czasF);
         long Czas = (czasF / 1000);
         double diss = dis * 1000;//przeliczenie odległości na metry
-        int avTimeS = (int) (diss / (int) Czas);
-        int avTime = (int) (avTimeS * 3.6);//obliczenie średniej prędkości i zamiana z m/s na km/h
+        int avTimeS = (int) ((int) (diss / Czas) * 3.6);//obliczenie średniej prędkości i zamiana z m/s na km/h
 
-        /*TimeZone UTC = TimeZone.getTimeZone("UTC");
+        return avTimeS;
+    }
+
+    public String WyliczCzas() {
+        long czasF = (new Date().getTime() - czasS.getTime());
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(czasF);
+
+        TimeZone UTC = TimeZone.getTimeZone("UTC");
 
         Date date = new Date(czasF);
         DateFormat formatter = new SimpleDateFormat("HH:mm:ss");
         formatter.setTimeZone(UTC);
-        String dateFormatted = formatter.format(date);*/
+        String dateFormatted = formatter.format(date);
 
-        return avTime;
+        return dateFormatted;
     }
 
     public double ObliczanieOdl(LatLng StartP, LatLng StopP) {
@@ -207,7 +216,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (StartPP.latitude != StopPP.latitude || StartPP.longitude != StopPP.longitude) {
             dis += ObliczanieOdl(StartPP, StopPP);
             StopPP = new LatLng(StartPP.latitude, StartPP.longitude);
-           // Toast.makeText(this, String.valueOf(dis), Toast.LENGTH_SHORT).show();
+            // Toast.makeText(this, String.valueOf(dis), Toast.LENGTH_SHORT).show();
             Log.d("test", String.valueOf(dis));
         }
     }
