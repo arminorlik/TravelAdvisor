@@ -3,6 +3,7 @@ package com.example.norbert.routespreparation2;
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -23,11 +24,13 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.io.IOException;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -37,6 +40,8 @@ import java.util.TimeZone;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+
+import static com.example.norbert.routespreparation2.R.id.map;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback, LocationListener {
 
@@ -55,12 +60,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean oneStop = false;
     private GPStracker gpStracker;
     private Location location;
-    double plat;
-    double plon;
-    double clat;
-    double clon;
-
     public double dis;
+    public ArrayList<LatLng> droga;
+    int i = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,7 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         setContentView(R.layout.activity_maps);
         ButterKnife.bind(this);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(map);
 
         mapFragment.getMapAsync(this);
         ActivityCompat.requestPermissions(MapsActivity.this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 123);
@@ -90,6 +92,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         czasS = new Date();
         mDatabaseHelper = new DatabaseHelper(this);
         mDatabaseHelper.setStartP(getAdres(StartP));//wyciągnięcie adresu rozpoczęcia podróży
+        droga = new ArrayList<LatLng>();
+        droga.add(0, StartP);
+
     }
 
     @Override
@@ -106,9 +111,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
+    public ArrayList<LatLng> getDroga() {
+        return droga;
+    }
+
     @OnClick(R.id.butStop)
     public void butStop() {
         if (oneStop == false) {
+            //rysowanie przebytej trasy
+            PolylineOptions polylineOptions = new PolylineOptions();
+            polylineOptions
+                    .addAll(droga)
+                    .width(5)
+                    .color(Color.RED);
+            mMap.addPolyline(polylineOptions);
 
             //Toast.makeText(this, String.valueOf(dis), Toast.LENGTH_SHORT).show();
             oneStop = true;
@@ -212,10 +228,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location location) {
+
         StartPP = new LatLng(location.getLatitude(), location.getLongitude());
         if (StartPP.latitude != StopPP.latitude || StartPP.longitude != StopPP.longitude) {
             dis += ObliczanieOdl(StartPP, StopPP);
             StopPP = new LatLng(StartPP.latitude, StartPP.longitude);
+            droga.add(i, StartPP);
+            i++;
             // Toast.makeText(this, String.valueOf(dis), Toast.LENGTH_SHORT).show();
             Log.d("test", String.valueOf(dis));
         }
