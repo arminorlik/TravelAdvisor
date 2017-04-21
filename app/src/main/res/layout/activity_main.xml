@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/activity_main"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/background2"
+                android:gravity="center_vertical"
+                tools:context="com.example.norbert.routespreparation2.MainActivity">
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:text="Menu główne"
+        android:textColor="@android:color/background_dark"
+        android:textSize="50sp"
+        android:textStyle="normal|bold"/>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/textView2"
+        android:paddingTop="10dp">
+
+        <LinearLayout
+
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+
+            <Button
+                android:id="@+id/btnStart"
+                style="@style/KEY_STYLE"
+                android:text="Start"
+
+                />
+
+            <Button
+                android:id="@+id/btnhistory"
+                style="@style/KEY_STYLE"
+                android:text="Historia"
+                />
+
+
+        </LinearLayout>
+
+
+    </RelativeLayout>
+</RelativeLayout>
