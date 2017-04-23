@@ -48,8 +48,10 @@
             android:configChanges="orientation"
             android:screenOrientation="portrait">
         </activity>
-        <activity android:name=".DistanceAdvisor">
+        <activity android:name=".DistanceAdvisor"
+            android:theme="@style/AppTheme.NoActionBar">
         </activity>
+
     </application>
 
 </manifest>

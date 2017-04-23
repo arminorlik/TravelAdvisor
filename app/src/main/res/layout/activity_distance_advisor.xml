@@ -1,10 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.example.norbert.routespreparation2.DistanceAdvisor">
+<LinearLayout android:id="@+id/LLglowny"
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:weightSum="1"
+              tools:context="com.example.norbert.routespreparation2.DistanceAdvisor">
 
-</android.support.constraint.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/TvInfoTrasa1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="30sp"
+        android:gravity="center"
+        android:textColor="#FFFFFF"
+        android:background="@color/colorPrimary"
+        android:text="TEST"/>
+
+    <ListView
+        android:id="@+id/LvTrasa1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="0.6">
+
+
+    </ListView>
+
+
+    <fragment android:id="@+id/map1"
+              class="com.google.android.gms.maps.SupportMapFragment"
+              xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:layout_weight="0.4">
+
+
+    </fragment>
+
+
+</LinearLayout>
+

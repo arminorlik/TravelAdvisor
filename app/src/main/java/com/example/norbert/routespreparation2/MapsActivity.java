@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.widget.Button;
 import android.widget.Toast;
 
@@ -56,12 +55,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Date czasS;
     private DatabaseHelper mDatabaseHelper;
     private String adres;
-    private int Dystans;
     private boolean oneStop = false;
     private GPStracker gpStracker;
     private Location location;
     public double dis;
     public ArrayList<LatLng> droga;
+    public String[] trasa;
     int i = 1;
 
     @Override
@@ -81,7 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Toast.makeText(this, "Uprawnienia nie przyznane", Toast.LENGTH_SHORT).show();
         }
         LocationManager lm = (LocationManager) this.getSystemService(this.LOCATION_SERVICE);
-        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 1, this);
+        lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 3, this);
         location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
 
         dlugosc = intent.getStringExtra("dlugosc");
@@ -93,8 +92,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mDatabaseHelper = new DatabaseHelper(this);
         mDatabaseHelper.setStartP(getAdres(StartP));//wyciągnięcie adresu rozpoczęcia podróży
         droga = new ArrayList<LatLng>();
+        trasa = new String[100000];
+        trasa[0] = getAdres(StartP);
         droga.add(0, StartP);
-
     }
 
     @Override
@@ -111,10 +111,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
     }
 
-    public ArrayList<LatLng> getDroga() {
-        return droga;
-    }
-
     @OnClick(R.id.butStop)
     public void butStop() {
         if (oneStop == false) {
@@ -126,7 +122,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .color(Color.RED);
             mMap.addPolyline(polylineOptions);
 
-            //Toast.makeText(this, String.valueOf(dis), Toast.LENGTH_SHORT).show();
             oneStop = true;
             Location location = gpStracker.getlocation();
             if (location != null) {
@@ -137,6 +132,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mDatabaseHelper.setKoniecP(getAdres(StopP)); //wyciągnięcie adresu zakonczenia podróży
             //wyciągnięcie odległości i czasu podróży
             mDatabaseHelper.setCzasP(odleglosc + " KM " + "AVS: " + WyliczAvs() + " KM/H" + " Time: " + WyliczCzas());
+            mDatabaseHelper.setTrasaP(stringTrasy(trasa));
+            mDatabaseHelper.setTravelLatLngString(travelLatLng());
 
             boolean insertData = mDatabaseHelper.addData();
         } else {
@@ -234,9 +231,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             dis += ObliczanieOdl(StartPP, StopPP);
             StopPP = new LatLng(StartPP.latitude, StartPP.longitude);
             droga.add(i, StartPP);
+            trasa[i] = getAdres(StartPP);
             i++;
-            // Toast.makeText(this, String.valueOf(dis), Toast.LENGTH_SHORT).show();
-            Log.d("test", String.valueOf(dis));
         }
     }
 
@@ -253,5 +249,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onProviderDisabled(String s) {
 
+    }
+
+    public String stringTrasy(String[] trasy) {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int i = 0; i <= trasy.length && trasy[i] != null; i++) {
+            stringBuilder.append(trasa[i].toString() + "|");
+        }
+        String stringTrasy = stringBuilder.toString();
+
+        return stringTrasy;
+    }
+
+    public String travelLatLng() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        for (int j = 0; j < droga.size(); j++) {
+            stringBuilder.append(droga.get(j).toString() + "|");
+        }
+        String travelLatLngString = stringBuilder.toString();
+
+        return travelLatLngString;
     }
 }

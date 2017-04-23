@@ -1,5 +1,6 @@
 package com.example.norbert.routespreparation2;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -7,7 +8,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -22,7 +22,6 @@ public class ListDataActivity extends AppCompatActivity {
     private DatabaseHelper mDatabaseHelper;
     private Cursor data;
     private ArrayList<RowModel> listData;
-    private ArrayList<RowModel> listDataClicked;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -33,20 +32,24 @@ public class ListDataActivity extends AppCompatActivity {
 
         data = mDatabaseHelper.getData();
         listData = new ArrayList<>();
-        listDataClicked = new ArrayList<>();
 
         mListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-                data.moveToPosition(i);
 
-                RowModel rowModel = new RowModel(data.getString(1), data.getString(2), data.getString(3));
-                Toast.makeText(getApplicationContext(),rowModel.getStartPos() , Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(ListDataActivity.this, DistanceAdvisor.class);
+                Bundle bundle = new Bundle();
+                bundle.putInt("ItemClicked", i);
+                intent.putExtras(bundle);
+                startActivity(intent);
+
             }
         });
 
         populateListView();
     }
+
+
 
     private void populateListView() {
 
@@ -57,5 +60,8 @@ public class ListDataActivity extends AppCompatActivity {
         ListDataAdapter adapter = new ListDataAdapter(this, R.layout.adapter_view_layout, listData);
         mListView.setAdapter(adapter);
     }
+
+
+
 }
 
